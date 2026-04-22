@@ -55,129 +55,131 @@ const courses = [
 
 const approved = new Set(JSON.parse(localStorage.getItem("approvedCourses") || "[]"));
 
-function isUnlocked(course) {
-  return course.prereq.every(id => approved.has(id));
+function getCourseById(id) {
+  return courses.find(course => course.id === id);
+}
+
+function isAvailable(course) {
+  return course.prereq.every(req => approved.has(req));
 }
 
 function getStatus(course) {
-  if (approved.has(course.id)) return "approved";
-  return isUnlocked(course) ? "available" : "locked";
+  if (approved.has(course.id)) return "passed";
+  if (isAvailable(course)) return "available";
+  return "blocked";
 }
 
-function save() {
+function saveProgress() {
   localStorage.setItem("approvedCourses", JSON.stringify([...approved]));
-}
-
-function labelStatus(status) {
-  if (status === "approved") return "Aprobado";
-  if (status === "available") return "Disponible";
-  return "Bloqueado";
-}
-
-function getCourseById(id) {
-  return courses.find(c => c.id === id);
-}
-
-function createCourseCard(course) {
-  const card = document.createElement("button");
-  card.className = `course ${getStatus(course)}`;
-  card.type = "button";
-  card.innerHTML = `
-    <span class="course-name">${course.name}</span>
-    <span class="course-status">${labelStatus(getStatus(course))}</span>
-  `;
-  card.addEventListener("click", () => openModal(course));
-  return card;
 }
 
 function renderGrid() {
   const grid = document.getElementById("grid");
-  if (!grid) return;
   grid.innerHTML = "";
 
   for (let semester = 1; semester <= 10; semester++) {
-    const column = document.createElement("section");
-    column.className = "semester";
+    const semesterCourses = courses.filter(course => course.semester === semester);
 
-    const title = document.createElement("h2");
+    const section = document.createElement("section");
+    section.className = "semester";
+
+    const title = document.createElement("h3");
     title.textContent = `${semester}° Semestre`;
-    column.appendChild(title);
+    section.appendChild(title);
 
-    courses
-      .filter(course => course.semester === semester)
-      .forEach(course => column.appendChild(createCourseCard(course)));
+    semesterCourses.forEach(course => {
+      const button = document.createElement("button");
+      const status = getStatus(course);
+      button.className = `course ${status}`;
+      button.innerHTML = `
+        ${course.name}
+        <small>${status === "passed" ? "Aprobado" : status === "available" ? "Disponible" : "Bloqueado"}</small>
+      `;
+      button.addEventListener("click", () => showCourse(course.id));
+      section.appendChild(button);
+    });
 
-    grid.appendChild(column);
+    grid.appendChild(section);
   }
-
-  updateProgress();
 }
 
-function updateProgress() {
-  const total = courses.length;
-  const done = approved.size;
-  const percent = Math.round((done / total) * 100);
-
-  const progressText = document.getElementById("progress-text");
-  const progressFill = document.getElementById("progress-fill");
-
-  if (progressText) progressText.textContent = `${done} de ${total} ramos aprobados (${percent}%)`;
-  if (progressFill) progressFill.style.width = `${percent}%`;
-}
-
-function openModal(course) {
-  const modal = document.getElementById("modal");
-  const title = document.getElementById("modal-title");
-  const prereq = document.getElementById("modal-prereq");
-  const opens = document.getElementById("modal-opens");
-  const action = document.getElementById("modal-action");
-
-  title.textContent = course.name;
+function showCourse(courseId) {
+  const course = getCourseById(courseId);
+  const panel = document.getElementById("panel");
 
   const prereqNames = course.prereq.length
     ? course.prereq.map(id => getCourseById(id)?.name || id)
-    : ["No tiene"];
+    : [];
 
   const opensNames = course.opens.length
     ? course.opens.map(id => getCourseById(id)?.name || id)
-    : ["No abre ramos directos"];
+    : [];
 
-  prereq.innerHTML = prereqNames.map(name => `<li>${name}</li>`).join("");
-  opens.innerHTML = opensNames.map(name => `<li>${name}</li>`).join("");
+  const isPassed = approved.has(course.id);
 
-  action.textContent = approved.has(course.id) ? "Quitar como aprobado" : "Marcar como aprobado";
-  action.onclick = () => toggleApproved(course.id);
+  panel.classList.remove("empty");
+  panel.innerHTML = `
+    <h2>${course.name}</h2>
+    <p><strong>Semestre:</strong> ${course.semester}°</p>
+    <p><strong>Estado:</strong> ${
+      isPassed ? "Aprobado" : isAvailable(course) ? "Disponible" : "Bloqueado"
+    }</p>
 
-  modal.showModal();
-}
+    <p><strong>Prerrequisitos:</strong></p>
+    <div>
+      ${
+        prereqNames.length
+          ? prereqNames.map(name => `<span class="tag">${name}</span>`).join("")
+          : '<span class="muted">No tiene</span>'
+      }
+    </div>
 
-function toggleApproved(id) {
-  if (approved.has(id)) {
-    approved.delete(id);
-  } else {
-    approved.add(id);
-  }
-  save();
-  document.getElementById("modal").close();
-  renderGrid();
+    <p><strong>Ramos que desbloquea:</strong></p>
+    <div>
+      ${
+        opensNames.length
+          ? opensNames.map(name => `<span class="tag">${name}</span>`).join("")
+          : '<span class="muted">No desbloquea ramos directos</span>'
+      }
+    </div>
+
+    <div class="controls">
+      <button class="${isPassed ? "unpass" : "pass"}" id="togglePass">
+        ${isPassed ? "Quitar aprobado" : "Marcar como aprobado"}
+      </button>
+    </div>
+  `;
+
+  document.getElementById("togglePass").addEventListener("click", () => {
+    if (approved.has(course.id)) {
+      approved.delete(course.id);
+    } else {
+      approved.add(course.id);
+    }
+    saveProgress();
+    renderGrid();
+    showCourse(course.id);
+  });
 }
 
 function resetProgress() {
   approved.clear();
-  save();
+  saveProgress();
   renderGrid();
+
+  const panel = document.getElementById("panel");
+  panel.className = "panel empty";
+  panel.innerHTML = `
+    <h2>Selecciona un ramo</h2>
+    <p>Aquí verás sus detalles.</p>
+  `;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   renderGrid();
 
-  const resetButton = document.getElementById("reset-progress");
-  if (resetButton) resetButton.addEventListener("click", resetProgress);
-
-  const closeButton = document.getElementById("modal-close");
-  if (closeButton) {
-    closeButton.addEventListener("click", () => {
-      document.getElementById("modal").close();
-    });
+  const resetBtn = document.getElementById("resetBtn");
+  if (resetBtn) {
+    resetBtn.addEventListener("click", resetProgress);
   }
 });
