@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Malla Interactiva Enfermería UCEN 2023</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Malla Interactiva Enfermería UCEN</h1>
+      <p>Generación 2023 · Haz clic en un ramo para ver prerrequisitos y ramos que desbloquea.</p>
+    </div>
+    <div class="actions">
+      <button id="resetBtn">Reiniciar progreso</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="legend">
+      <span><i class="dot blocked"></i> Bloqueado</span>
+      <span><i class="dot available"></i> Disponible</span>
+      <span><i class="dot passed"></i> Aprobado</span>
+    </section>
+
+    <section id="grid" class="grid"></section>
+  </main>
+
+  <aside id="panel" class="panel empty">
+    <h2>Selecciona un ramo</h2>
+    <p>Aquí verás sus detalles.</p>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
