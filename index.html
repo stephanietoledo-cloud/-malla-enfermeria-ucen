@@ -1,268 +1,328 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Malla Interactiva Enfermería UCEN</title>
   <style>
     :root{
-      --bg:#0d1117; --card:#161b22; --border:#30363d; --text:#e6edf3; --muted:#8b949e;
-      --prof:#3340a7; --disc:#2f79b7; --gen:#8aaecc; --locked:#2d333b; --ok:#1f6f3d; --btn:#58a6ff;
+      --bg:#0d1117;
+      --card:#161b22;
+      --border:#30363d;
+      --text:#e6edf3;
+      --muted:#8b949e;
+      --prof:#3340a7;
+      --disc:#2f79b7;
+      --gen:#8aaecc;
+      --locked:#2d333b;
+      --ok:#1f6f3d;
+      --btn:#58a6ff;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
-    header{padding:20px;border-bottom:1px solid var(--border);background:#111827;position:sticky;top:0;z-index:3}
-    h1{margin:0 0 6px;font-size:30px}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    header{
+      padding:18px;
+      border-bottom:1px solid var(--border);
+      background:#111827;
+      position:sticky;
+      top:0;
+      z-index:5;
+    }
+    h1{margin:0 0 6px;font-size:28px}
     header p{margin:0;color:var(--muted)}
-    .top-actions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
-    .top-actions button{
-      border:none;border-radius:10px;padding:10px 14px;background:var(--btn);color:#fff;font-weight:700;cursor:pointer
+    .topbar{margin-top:12px}
+    .topbar button{
+      background:var(--btn);
+      color:#fff;
+      border:none;
+      border-radius:10px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
     }
-    main{padding:18px}
-    .legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;color:var(--muted)}
-    .legend span{display:flex;align-items:center;gap:8px}
-    .dot{width:14px;height:14px;border-radius:4px;display:inline-block}
-    .prof{background:var(--prof)} .disc{background:var(--disc)} .gen{background:var(--gen)}
-    .dot.locked{background:var(--locked)} .dot.ok{background:var(--ok)}
-    .semester-head,.grid{
-      display:grid;grid-template-columns:repeat(10,minmax(130px,1fr));gap:8px
+    main{padding:16px}
+    .legend{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+      color:var(--muted);
+      font-size:14px;
     }
-    .semester-head{margin-bottom:8px}
-    .semester-head div{
-      background:#0f172a;border:1px solid var(--border);border-radius:10px;padding:10px;text-align:center;font-weight:700
+    .dot{
+      width:12px;
+      height:12px;
+      border-radius:4px;
+      display:inline-block;
+      margin-right:6px;
+    }
+    .prof{background:var(--prof)}
+    .disc{background:var(--disc)}
+    .gen{background:var(--gen)}
+    .dot.locked{background:var(--locked)}
+    .dot.ok{background:var(--ok)}
+    .sem-head,.grid{
+      display:grid;
+      grid-template-columns:repeat(10,minmax(120px,1fr));
+      gap:8px;
+    }
+    .sem-head{margin-bottom:8px}
+    .sem-head div{
+      background:#0f172a;
+      border:1px solid var(--border);
+      border-radius:10px;
+      padding:10px;
+      text-align:center;
+      font-weight:700;
+      font-size:14px;
     }
     .course{
-      min-height:92px;border:none;border-radius:12px;color:white;padding:14px;text-align:center;font-size:15px;
-      line-height:1.25;cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,.18);position:relative
+      min-height:88px;
+      border:none;
+      border-radius:12px;
+      padding:12px;
+      color:#fff;
+      text-align:center;
+      font-size:14px;
+      line-height:1.25;
+      cursor:pointer;
     }
-    .course:hover{outline:2px solid rgba(255,255,255,.15)}
-    .span-2{grid-column:span 2}
-    .locked-course{filter:grayscale(.35); opacity:.55}
-    .approved{box-shadow:inset 0 0 0 3px var(--ok), 0 2px 10px rgba(0,0,0,.18)}
+    .span2{grid-column:span 2}
+    .locked{
+      filter:grayscale(.35);
+      opacity:.55;
+    }
+    .approved{
+      box-shadow:inset 0 0 0 3px var(--ok);
+    }
     .state{
-      display:block;margin-top:8px;font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;background:rgba(0,0,0,.22)
+      display:block;
+      margin-top:8px;
+      font-size:12px;
+      font-weight:700;
+      background:rgba(0,0,0,.22);
+      border-radius:999px;
+      padding:4px 8px;
     }
     .panel{
-      margin-top:18px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;
+      margin-top:18px;
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
     }
     .panel h2{margin:0 0 10px}
     .meta{color:var(--muted);margin:8px 0}
     .tag{
-      display:inline-block;background:#1f2937;border:1px solid var(--border);padding:6px 10px;border-radius:999px;
-      margin:4px 6px 0 0;font-size:13px
+      display:inline-block;
+      background:#1f2937;
+      border:1px solid var(--border);
+      padding:6px 10px;
+      border-radius:999px;
+      margin:4px 6px 0 0;
+      font-size:13px;
     }
-    .controls{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+    .controls{margin-top:14px}
     .controls button{
-      border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer
+      border:none;
+      border-radius:10px;
+      padding:10px 14px;
+      font-weight:700;
+      cursor:pointer;
+      color:#fff;
     }
-    .approve{background:#238636;color:#fff}
-    .remove{background:#6e7681;color:#fff}
-    .smallnote{margin-top:10px;color:var(--muted);font-size:13px}
+    .approve{background:#238636}
+    .remove{background:#6e7681}
+    .note{margin-top:10px;color:var(--muted);font-size:13px}
     @media (max-width:1100px){
-      .semester-head,.grid{grid-template-columns:repeat(5,minmax(150px,1fr))}
+      .sem-head,.grid{grid-template-columns:repeat(5,minmax(140px,1fr))}
     }
     @media (max-width:700px){
-      .semester-head,.grid{grid-template-columns:repeat(2,minmax(140px,1fr))}
-      h1{font-size:24px}
+      .sem-head,.grid{grid-template-columns:repeat(2,minmax(140px,1fr))}
+      h1{font-size:22px}
     }
   </style>
 </head>
 <body>
 <header>
   <h1>Malla Interactiva Enfermería UCEN</h1>
-  <p>Versión corregida con ramos que duran dos semestres y con avance interactivo.</p>
-  <div class="top-actions">
+  <p>Con ramos de dos semestres y avance interactivo.</p>
+  <div class="topbar">
     <button onclick="resetProgress()">Reiniciar progreso</button>
   </div>
 </header>
 
 <main>
   <div class="legend">
-    <span><i class="dot prof"></i> Área Formación Profesional</span>
-    <span><i class="dot disc"></i> Área Formación Disciplinar</span>
-    <span><i class="dot gen"></i> Área Formación General</span>
+    <span><i class="dot prof"></i> Profesional</span>
+    <span><i class="dot disc"></i> Disciplinar</span>
+    <span><i class="dot gen"></i> General</span>
     <span><i class="dot locked"></i> Bloqueado</span>
     <span><i class="dot ok"></i> Aprobado</span>
   </div>
 
-  <div class="semester-head">
-    <div>Semestre 1</div><div>Semestre 2</div><div>Semestre 3</div><div>Semestre 4</div><div>Semestre 5</div>
-    <div>Semestre 6</div><div>Semestre 7</div><div>Semestre 8</div><div>Semestre 9</div><div>Semestre 10</div>
+  <div class="sem-head">
+    <div>Sem. 1</div><div>Sem. 2</div><div>Sem. 3</div><div>Sem. 4</div><div>Sem. 5</div>
+    <div>Sem. 6</div><div>Sem. 7</div><div>Sem. 8</div><div>Sem. 9</div><div>Sem. 10</div>
   </div>
 
   <div class="grid" id="grid"></div>
 
   <div class="panel" id="panel">
     <h2>Selecciona un ramo</h2>
-    <p class="meta">Aquí verás qué ramos necesitas aprobar y cuáles se te abren después.</p>
-    <div>
-      <span class="tag">Semestres 5-6 corregidos</span>
-      <span class="tag">Semestres 7-8 corregidos</span>
-      <span class="tag">Internados incluidos</span>
-    </div>
-    <p class="smallnote">Nota: como la malla oficial no muestra prerrequisitos explícitos, esta lógica de desbloqueo es una secuencia inferida para que la malla interactiva funcione.</p>
+    <p class="meta">Aquí verás qué aprobar antes y qué ramos se te abren después.</p>
+    <div class="note">La malla oficial muestra los ramos por semestre, incluidos los que se extienden por dos semestres y los internados del final. :contentReference[oaicite:0]{index=0}</div>
   </div>
 </main>
 
 <script>
 const courses = [
-  { id:"fund", name:"Fundamentos de Enfermería", semesters:[1], area:"prof", prereq:[], opens:["cuidados"] },
-  { id:"quim", name:"Química General y Orgánica", semesters:[1], area:"disc", prereq:[], opens:["bioq"] },
-  { id:"anato", name:"Anatomía Humana", semesters:[1], area:"disc", prereq:[], opens:["embri"] },
-  { id:"bio", name:"Biología Celular y Genética", semesters:[1], area:"disc", prereq:[], opens:["micro"] },
-  { id:"ing1", name:"Curso Sello Institucional I: Inglés I", semesters:[1], area:"gen", prereq:[], opens:["ing2"] },
-  { id:"vida1", name:"Formación Básica para la Vida Académica I", semesters:[1], area:"gen", prereq:[], opens:["vida2"] },
+  {id:"fund",name:"Fundamentos de Enfermería",sem:[1],area:"prof",pre:[],open:["cuidados"]},
+  {id:"quim",name:"Química General y Orgánica",sem:[1],area:"disc",pre:[],open:["bioq"]},
+  {id:"anato",name:"Anatomía Humana",sem:[1],area:"disc",pre:[],open:["embri"]},
+  {id:"bio",name:"Biología Celular y Genética",sem:[1],area:"disc",pre:[],open:["micro"]},
+  {id:"ing1",name:"Curso Sello Institucional I: Inglés I",sem:[1],area:"gen",pre:[],open:["ing2"]},
+  {id:"vida1",name:"Formación Básica para la Vida Académica I",sem:[1],area:"gen",pre:[],open:["vida2"]},
 
-  { id:"cuidados", name:"Cuidados Básicos de Enfermería", semesters:[2], area:"prof", prereq:["fund"], opens:["proc1"] },
-  { id:"bioq", name:"Bioquímica", semesters:[2], area:"disc", prereq:["quim"], opens:["saludpub"] },
-  { id:"embri", name:"Embriología e Histología", semesters:[2], area:"disc", prereq:["anato"], opens:["farma"] },
-  { id:"micro", name:"Microbiología y Parasitología", semesters:[2], area:"disc", prereq:["bio"], opens:["fisio"] },
-  { id:"ing2", name:"Curso Sello Institucional II: Inglés II", semesters:[2], area:"gen", prereq:["ing1"], opens:["sello3"] },
-  { id:"vida2", name:"Formación Básica para la Vida Académica II", semesters:[2], area:"gen", prereq:["vida1"], opens:["sello3"] },
+  {id:"cuidados",name:"Cuidados Básicos de Enfermería",sem:[2],area:"prof",pre:["fund"],open:["proc1"]},
+  {id:"bioq",name:"Bioquímica",sem:[2],area:"disc",pre:["quim"],open:["saludpub"]},
+  {id:"embri",name:"Embriología e Histología",sem:[2],area:"disc",pre:["anato"],open:["farma"]},
+  {id:"micro",name:"Microbiología y Parasitología",sem:[2],area:"disc",pre:["bio"],open:["fisio"]},
+  {id:"ing2",name:"Curso Sello Institucional II: Inglés II",sem:[2],area:"gen",pre:["ing1"],open:["sello3"]},
+  {id:"vida2",name:"Formación Básica para la Vida Académica II",sem:[2],area:"gen",pre:["vida1"],open:["sello3"]},
 
-  { id:"proc1", name:"Proceso y Cuidados de Enfermería I", semesters:[3], area:"prof", prereq:["cuidados"], opens:["proc2"] },
-  { id:"saludpub", name:"Salud Pública", semesters:[3], area:"disc", prereq:["bioq"], opens:["farmaap","saludfam2"] },
-  { id:"farma", name:"Farmacología", semesters:[3], area:"disc", prereq:["embri"], opens:["saludfam1","farmaap"] },
-  { id:"fisio", name:"Fisiología", semesters:[3], area:"disc", prereq:["micro"], opens:["fisiop"] },
-  { id:"bioest", name:"Bioestadística", semesters:[3], area:"disc", prereq:[], opens:["gestionsalud","metodo"] },
-  { id:"sello3", name:"Curso Sello Institucional III", semesters:[3], area:"gen", prereq:["ing2"], opens:["sello4"] },
+  {id:"proc1",name:"Proceso y Cuidados de Enfermería I",sem:[3],area:"prof",pre:["cuidados"],open:["proc2"]},
+  {id:"saludpub",name:"Salud Pública",sem:[3],area:"disc",pre:["bioq"],open:["farmaap","saludfam2"]},
+  {id:"farma",name:"Farmacología",sem:[3],area:"disc",pre:["embri"],open:["saludfam1","farmaap"]},
+  {id:"fisio",name:"Fisiología",sem:[3],area:"disc",pre:["micro"],open:["fisiop"]},
+  {id:"bioest",name:"Bioestadística",sem:[3],area:"disc",pre:[],open:["gestionsalud","metodo"]},
+  {id:"sello3",name:"Curso Sello Institucional III",sem:[3],area:"gen",pre:["ing2"],open:["sello4"]},
 
-  { id:"proc2", name:"Proceso y Cuidados de Enfermería II", semesters:[4], area:"prof", prereq:["proc1"], opens:["gestion1"] },
-  { id:"farmaap", name:"Farmacología Aplicada a la Enfermería", semesters:[4], area:"prof", prereq:["saludpub","farma"], opens:["saludfam2"] },
-  { id:"saludfam1", name:"Enfermería en Salud Familiar y Comunitaria I", semesters:[4], area:"prof", prereq:["farma"], opens:["medq","saludfam2"] },
-  { id:"fisiop", name:"Fisiopatología", semesters:[4], area:"disc", prereq:["fisio"], opens:["geronto"] },
-  { id:"gestionsalud", name:"Gestión y Administración en Salud", semesters:[4], area:"disc", prereq:["bioest"], opens:["mujer"] },
-  { id:"sello4", name:"Curso Sello Institucional IV", semesters:[4], area:"gen", prereq:["sello3"], opens:["ays"] },
+  {id:"proc2",name:"Proceso y Cuidados de Enfermería II",sem:[4],area:"prof",pre:["proc1"],open:["gestion1"]},
+  {id:"farmaap",name:"Farmacología Aplicada a la Enfermería",sem:[4],area:"prof",pre:["saludpub","farma"],open:["saludfam2"]},
+  {id:"saludfam1",name:"Enfermería en Salud Familiar y Comunitaria I",sem:[4],area:"prof",pre:["farma"],open:["medq","saludfam2"]},
+  {id:"fisiop",name:"Fisiopatología",sem:[4],area:"disc",pre:["fisio"],open:["geronto"]},
+  {id:"gestionsalud",name:"Gestión y Administración en Salud",sem:[4],area:"disc",pre:["bioest"],open:["mujer"]},
+  {id:"sello4",name:"Curso Sello Institucional IV",sem:[4],area:"gen",pre:["sello3"],open:["ays"]},
 
-  { id:"gestion1", name:"Gestión y Administración en Servicios de Enfermería I", semesters:[5], area:"prof", prereq:["proc2"], opens:["gestion2"] },
-  { id:"saludfam2", name:"Enfermería en Salud Familiar y Comunitaria II", semesters:[5,6], area:"prof", prereq:["saludfam1","farmaap"], opens:["saludfam3"] },
-  { id:"medq", name:"Enfermería en Médico-Quirúrgico", semesters:[5,6], area:"prof", prereq:["saludfam1"], opens:["urg"] },
-  { id:"geronto", name:"Enfermería en Gerontología y Geriatría", semesters:[5,6], area:"prof", prereq:["fisiop"], opens:["mental1"] },
-  { id:"mujer", name:"Enfermería en Salud de la Mujer", semesters:[5], area:"prof", prereq:["gestionsalud"], opens:["pedia"] },
-  { id:"ays", name:"Interdisciplinar A+S", semesters:[5], area:"gen", prereq:["sello4"], opens:["inter"] },
+  {id:"gestion1",name:"Gestión y Administración en Servicios de Enfermería I",sem:[5],area:"prof",pre:["proc2"],open:["gestion2"]},
+  {id:"saludfam2",name:"Enfermería en Salud Familiar y Comunitaria II",sem:[5,6],area:"prof",pre:["saludfam1","farmaap"],open:["saludfam3"]},
+  {id:"medq",name:"Enfermería en Médico-Quirúrgico",sem:[5,6],area:"prof",pre:["saludfam1"],open:["urg"]},
+  {id:"geronto",name:"Enfermería en Gerontología y Geriatría",sem:[5,6],area:"prof",pre:["fisiop"],open:["mental1"]},
+  {id:"mujer",name:"Enfermería en Salud de la Mujer",sem:[5],area:"prof",pre:["gestionsalud"],open:["pedia"]},
+  {id:"ays",name:"Interdisciplinar A+S",sem:[5],area:"gen",pre:["sello4"],open:["inter"]},
 
-  { id:"gestion2", name:"Gestión y Administración en Servicios de Enfermería II", semesters:[6], area:"prof", prereq:["gestion1"], opens:["intern1"] },
-  { id:"urg", name:"Enfermería en Urgencias", semesters:[7,8], area:"prof", prereq:["medq"], opens:["intern1"] },
-  { id:"mental1", name:"Enfermería en Salud Mental I", semesters:[7], area:"prof", prereq:["geronto"], opens:["mental2"] },
-  { id:"metodo", name:"Metodología de la Investigación", semesters:[6], area:"disc", prereq:["bioest"], opens:["inv1"] },
-  { id:"inter", name:"Interdisciplinar", semesters:[6], area:"gen", prereq:["ays"], opens:["elec1"] },
+  {id:"gestion2",name:"Gestión y Administración en Servicios de Enfermería II",sem:[6],area:"prof",pre:["gestion1"],open:["intern1"]},
+  {id:"metodo",name:"Metodología de la Investigación",sem:[6],area:"disc",pre:["bioest"],open:["inv1"]},
+  {id:"inter",name:"Interdisciplinar",sem:[6],area:"gen",pre:["ays"],open:["elec1"]},
 
-  { id:"pedia", name:"Enfermería en Pediatría", semesters:[7,8], area:"prof", prereq:["mujer"], opens:["intern1"] },
-  { id:"saludfam3", name:"Enfermería en Salud Familiar y Comunitaria III", semesters:[7,8], area:"prof", prereq:["saludfam2"], opens:["intern2"] },
-  { id:"mental2", name:"Enfermería en Salud Mental II", semesters:[8], area:"prof", prereq:["mental1"], opens:["intern2"] },
-  { id:"inv1", name:"Investigación en Enfermería I", semesters:[7], area:"prof", prereq:["metodo"], opens:["inv2"] },
-  { id:"elec1", name:"Electivo Disciplinar I", semesters:[7], area:"prof", prereq:["inter"], opens:["elec2"] },
+  {id:"pedia",name:"Enfermería en Pediatría",sem:[7,8],area:"prof",pre:["mujer"],open:["intern1"]},
+  {id:"saludfam3",name:"Enfermería en Salud Familiar y Comunitaria III",sem:[7,8],area:"prof",pre:["saludfam2"],open:["intern2"]},
+  {id:"urg",name:"Enfermería en Urgencias",sem:[7,8],area:"prof",pre:["medq"],open:["intern1"]},
+  {id:"mental1",name:"Enfermería en Salud Mental I",sem:[7],area:"prof",pre:["geronto"],open:["mental2"]},
+  {id:"mental2",name:"Enfermería en Salud Mental II",sem:[8],area:"prof",pre:["mental1"],open:["intern2"]},
+  {id:"inv1",name:"Investigación en Enfermería I",sem:[7],area:"prof",pre:["metodo"],open:["inv2"]},
+  {id:"elec1",name:"Electivo Disciplinar I",sem:[7],area:"prof",pre:["inter"],open:["elec2"]},
+  {id:"inv2",name:"Investigación en Enfermería II",sem:[8],area:"prof",pre:["inv1"],open:["intern2"]},
+  {id:"elec2",name:"Electivo Disciplinar II",sem:[8],area:"prof",pre:["elec1"],open:["intern2"]},
 
-  { id:"inv2", name:"Investigación en Enfermería II", semesters:[8], area:"prof", prereq:["inv1"], opens:["intern2"] },
-  { id:"elec2", name:"Electivo Disciplinar II", semesters:[8], area:"prof", prereq:["elec1"], opens:["intern2"] },
-
-  { id:"intern1", name:"Internado de Enfermería I", semesters:[9,10], area:"prof", prereq:["gestion2","urg","pedia"], opens:["intern2"] },
-  { id:"intern2", name:"Internado de Enfermería II", semesters:[9,10], area:"prof", prereq:["intern1","saludfam3","mental2","inv2","elec2"], opens:[] }
+  {id:"intern1",name:"Internado de Enfermería I",sem:[9,10],area:"prof",pre:["gestion2","urg","pedia"],open:["intern2"]},
+  {id:"intern2",name:"Internado de Enfermería II",sem:[9,10],area:"prof",pre:["intern1","saludfam3","mental2","inv2","elec2"],open:[]}
 ];
 
-const approved = new Set(JSON.parse(localStorage.getItem("ucen_enfermeria_aprobados") || "[]"));
+const layout = [
+  ["fund","cuidados","proc1","proc2","gestion1","gestion2","pedia","pedia","intern1","intern1"],
+  ["quim","bioq","saludpub","farmaap","saludfam2","saludfam2","saludfam3","saludfam3","intern2","intern2"],
+  ["anato","embri","farma","saludfam1","medq","medq","urg","urg",null,null],
+  ["bio","micro","fisio","fisiop","geronto","geronto","mental1","mental2",null,null],
+  ["ing1","ing2","bioest","gestionsalud","mujer","metodo","inv1","inv2",null,null],
+  ["vida1","vida2","sello3","sello4","ays","inter","elec1","elec2",null,null]
+];
+
+const approved = new Set(JSON.parse(localStorage.getItem("malla_ucen_aprobados") || "[]"));
 
 function getCourse(id){ return courses.find(c => c.id === id); }
-function isApproved(id){ return approved.has(id); }
-function isUnlocked(course){ return course.prereq.every(id => approved.has(id)); }
-function courseState(course){
-  if (isApproved(course.id)) return "approved";
-  if (isUnlocked(course)) return "available";
-  return "locked";
+function isUnlocked(c){ return c.pre.every(x => approved.has(x)); }
+function state(c){
+  if (approved.has(c.id)) return "approved";
+  return isUnlocked(c) ? "available" : "locked";
 }
-function semesterText(course){
-  return course.semesters.length === 2 ? `Semestres ${course.semesters[0]} y ${course.semesters[1]}` : `Semestre ${course.semesters[0]}`;
+function semesterLabel(c){
+  return c.sem.length === 2 ? `Semestres ${c.sem[0]} y ${c.sem[1]}` : `Semestre ${c.sem[0]}`;
 }
-function renderGrid(){
+function areaClass(area){
+  if (area === "prof") return "prof";
+  if (area === "disc") return "disc";
+  return "gen";
+}
+function render(){
   const grid = document.getElementById("grid");
   grid.innerHTML = "";
+  const printed = new Set();
 
-  const placements = [
-    ["fund","cuidados","proc1","proc2","gestion1","gestion2","pedia","pedia","intern1","intern1"],
-    ["quim","bioq","saludpub","farmaap","saludfam2","saludfam2","saludfam3","saludfam3","intern2","intern2"],
-    ["anato","embri","farma","saludfam1","medq","medq","urg","urg",null,null],
-    ["bio","micro","fisio","fisiop","geronto","geronto","mental1","mental2",null,null],
-    ["ing1","ing2","bioest","gestionsalud","mujer","metodo","inv1","inv2",null,null],
-    ["vida1","vida2","sello3","sello4","ays","inter","elec1","elec2",null,null]
-  ];
-
-  const rendered = new Set();
-
-  placements.flat().forEach((id, idx) => {
-    if (!id) {
-      const spacer = document.createElement("div");
-      grid.appendChild(spacer);
-      return;
-    }
-    if (rendered.has(id)) return;
-
-    const course = getCourse(id);
-    const btn = document.createElement("button");
-    const state = courseState(course);
-    btn.className = `course ${course.area === "prof" ? "prof" : course.area === "disc" ? "disc" : "gen"} ${state === "locked" ? "locked-course" : ""} ${state === "approved" ? "approved" : ""}`;
-    if (course.semesters.length === 2) btn.classList.add("span-2");
-
-    btn.innerHTML = `
-      <div>${course.name}</div>
-      <span class="state">${state === "approved" ? "Aprobado" : state === "available" ? "Disponible" : "Bloqueado"}</span>
-    `;
-    btn.onclick = () => showInfo(course.id);
-
-    grid.appendChild(btn);
-    rendered.add(id);
+  layout.forEach(row => {
+    row.forEach(id => {
+      if (!id) {
+        const empty = document.createElement("div");
+        grid.appendChild(empty);
+        return;
+      }
+      if (printed.has(id)) return;
+      const c = getCourse(id);
+      const s = state(c);
+      const btn = document.createElement("button");
+      btn.className = `course ${areaClass(c.area)} ${c.sem.length===2 ? "span2" : ""} ${s==="locked" ? "locked" : ""} ${s==="approved" ? "approved" : ""}`;
+      btn.innerHTML = `<div>${c.name}</div><span class="state">${s==="approved" ? "Aprobado" : s==="available" ? "Disponible" : "Bloqueado"}</span>`;
+      btn.onclick = () => showInfo(c.id);
+      grid.appendChild(btn);
+      printed.add(id);
+    });
   });
 }
 function showInfo(id){
-  const course = getCourse(id);
-  const panel = document.getElementById("panel");
-  const prereqNames = course.prereq.map(id => getCourse(id).name);
-  const opensNames = course.opens.map(id => getCourse(id).name);
-  const approvedNow = isApproved(course.id);
-  const unlocked = isUnlocked(course);
-
-  panel.innerHTML = `
-    <h2>${course.name}</h2>
-    <p class="meta"><strong>Ubicación:</strong> ${semesterText(course)}</p>
-    <p class="meta"><strong>Estado:</strong> ${approvedNow ? "Aprobado" : unlocked ? "Disponible" : "Bloqueado"}</p>
-    <p><strong>Necesitas aprobar antes:</strong></p>
-    <div>
-      ${prereqNames.length ? prereqNames.map(x => `<span class="tag">${x}</span>`).join("") : '<span class="tag">No tiene</span>'}
-    </div>
+  const c = getCourse(id);
+  const pre = c.pre.length ? c.pre.map(x => `<span class="tag">${getCourse(x).name}</span>`).join("") : `<span class="tag">No tiene</span>`;
+  const open = c.open.length ? c.open.map(x => `<span class="tag">${getCourse(x).name}</span>`).join("") : `<span class="tag">No abre ramos directos</span>`;
+  const s = state(c);
+  document.getElementById("panel").innerHTML = `
+    <h2>${c.name}</h2>
+    <p class="meta"><strong>Ubicación:</strong> ${semesterLabel(c)}</p>
+    <p class="meta"><strong>Estado:</strong> ${s==="approved" ? "Aprobado" : s==="available" ? "Disponible" : "Bloqueado"}</p>
+    <p><strong>Debes aprobar antes:</strong></p>
+    <div>${pre}</div>
     <p><strong>Este ramo te abre:</strong></p>
-    <div>
-      ${opensNames.length ? opensNames.map(x => `<span class="tag">${x}</span>`).join("") : '<span class="tag">No abre ramos directos</span>'}
-    </div>
+    <div>${open}</div>
     <div class="controls">
-      <button class="${approvedNow ? "remove" : "approve"}" onclick="toggleApprove('${course.id}')">
-        ${approvedNow ? "Quitar aprobado" : "Marcar como aprobado"}
+      <button class="${approved.has(c.id) ? "remove" : "approve"}" onclick="toggleApprove('${c.id}')">
+        ${approved.has(c.id) ? "Quitar aprobado" : "Marcar como aprobado"}
       </button>
     </div>
-    <p class="smallnote">La lógica de desbloqueo es referencial para la malla interactiva.</p>
+    <div class="note">La malla oficial no trae flechas de prerrequisitos, así que esta apertura es una lógica interactiva referencial. :contentReference[oaicite:1]{index=1}</div>
   `;
 }
 function toggleApprove(id){
   if (approved.has(id)) approved.delete(id);
   else approved.add(id);
-  localStorage.setItem("ucen_enfermeria_aprobados", JSON.stringify([...approved]));
-  renderGrid();
+  localStorage.setItem("malla_ucen_aprobados", JSON.stringify([...approved]));
+  render();
   showInfo(id);
 }
 function resetProgress(){
   approved.clear();
-  localStorage.setItem("ucen_enfermeria_aprobados", JSON.stringify([]));
-  renderGrid();
+  localStorage.setItem("malla_ucen_aprobados", "[]");
+  render();
   document.getElementById("panel").innerHTML = `
     <h2>Selecciona un ramo</h2>
-    <p class="meta">Aquí verás qué ramos necesitas aprobar y cuáles se te abren después.</p>
-    <div>
-      <span class="tag">Semestres 5-6 corregidos</span>
-      <span class="tag">Semestres 7-8 corregidos</span>
-      <span class="tag">Internados incluidos</span>
-    </div>
-    <p class="smallnote">Nota: como la malla oficial no muestra prerrequisitos explícitos, esta lógica de desbloqueo es una secuencia inferida para que la malla interactiva funcione.</p>
+    <p class="meta">Aquí verás qué aprobar antes y qué ramos se te abren después.</p>
+    <div class="note">Están incluidos los ramos extendidos entre semestres 5-6, 7-8 y los internados del final, tal como aparecen en tu PDF. :contentReference[oaicite:2]{index=2}</div>
   `;
 }
-renderGrid();
+render();
 </script>
 </body>
 </html>
